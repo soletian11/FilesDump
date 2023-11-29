@@ -8,4 +8,4 @@ COPY clothing-model.tflite .
 
 COPY lambda_function.py .
 
-CMD["lambda_function.lamda_handler"]
+CMD["lambda_function.lambda_handler"]
