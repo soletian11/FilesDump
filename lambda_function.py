@@ -5,7 +5,7 @@ from urllib import request
 from PIL import Image
 import numpy as np
 
-
+#url='https://habrastorage.org/webt/rt/d9/dh/rtd9dhsmhwrdezeldzoqgijdg8a.jpeg'
 
 intrepreter_hw=tflite.Interpreter(model_path='/home/ubuntu/FilesDump/bees-wasps.tflite')
 intrepreter_hw.allocate_tensors()
@@ -30,14 +30,21 @@ def prepare_image(img, target_size):
 def preprocess_input(x):
     return x / 255.0
 
-url='https://habrastorage.org/webt/rt/d9/dh/rtd9dhsmhwrdezeldzoqgijdg8a.jpeg'
-img=download_image(url)
-img=prepare_image(img,(150,150))
-x=np.array(img, dtype='float32')
-X=preprocess_input(np.array([x]))
-print(X[0,0,0,0])
+def predict(url):
+    img=download_image(url)
+    img=prepare_image(img,(150,150))
+    x=np.array(img, dtype='float32')
+    X=preprocess_input(np.array([x]))
+    print(X[0,0,0,0])
+    print("output index" ,outputhw_index)
+    intrepreter_hw.set_tensor(inputhw_index,X)
+    intrepreter_hw.invoke()
+    preds=intrepreter_hw.get_tensor(outputhw_index)
+    return preds
 
-intrepreter_hw.set_tensor(inputhw_index,X)
-intrepreter_hw.invoke()
-preds=intrepreter_hw.get_tensor(outputhw_index)
-print(preds[0])
+def lambda_handler(event, context):
+    url = event['url']
+    result = predict(url)
+    return result
+
+# predict(url)
